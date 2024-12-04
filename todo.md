@@ -1,6 +1,10 @@
 Todo
 ----
 - High priority
+    - <s>Profiler</s> Done since 04-12-2024_1 Beta
+    - Window flags 
+    - Proper multi window handling 
+    - Application launch flags 
     - Wasm/Emscripten Support
     - Implement File Dialog
     - Multithreading

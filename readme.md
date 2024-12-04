@@ -17,6 +17,7 @@ External Dependencies
   - enkiTS
   - spdlog
   - tracy profiler
+  - GTK4 (on Linux) 
 
 Supported Graphics Apis
 -----------------------

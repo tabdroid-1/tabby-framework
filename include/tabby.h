@@ -6,6 +6,7 @@
 #include "tabby/event_mouse.h"
 #include "tabby/application.h"
 #include "tabby/event_key.h"
+#include "tabby/profiling.h"
 #include "tabby/subsystem.h"
 #include "tabby/defines.h"
 #include "tabby/window.h"
