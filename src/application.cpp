@@ -1,6 +1,7 @@
 #include "tabby/event_application.h"
 #include "tabby/window_manager.h"
 #include "tabby/application.h"
+#include "imgui_renderer.h"
 #include "tabby/input.h"
 #include "tabby/time.h"
 
@@ -22,8 +23,13 @@ Application::Application(const ApplicationSpecification& spec)
     m_Specification.main_window_spec.event_callback = TB_BIND_EVENT_FUNCTION(Application::OnEvent);
     m_WindowManger->AddWindow("main", m_Specification.main_window_spec);
 
+    auto main_window = m_WindowManger->GetWindow("main");
+
     m_RootSystem = spec.root_system;
     m_RootSystem->Launch();
+
+    m_ImGuiRenderer = new ImGuiRenderer();
+    m_ImGuiRenderer->Launch(main_window->Raw());
 
     Input::Init();
 
@@ -55,14 +61,16 @@ ApplicationResult Application::Run()
     Time::FrameStart();
     Input::Update();
 
-    bgfx::touch(0);
-
     {
+        m_ImGuiRenderer->BeginFrame();
+
         m_RootSystem->OnUpdate();
-        m_WindowManger->ProcessEvents();
+
+        m_ImGuiRenderer->EndFrame();
     }
 
     bgfx::frame();
+    m_WindowManger->ProcessEvents();
 
     return TABBY_APPLICATION_CONTINUE;
 }

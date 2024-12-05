@@ -8,6 +8,8 @@
 
 namespace Tabby {
 
+class ImGuiRenderer;
+
 struct ApplicationSpecification {
     WindowSpecification main_window_spec;
     std::string working_directory;
@@ -54,6 +56,7 @@ private:
 
     ApplicationSpecification m_Specification;
     WindowManager* m_WindowManger;
+    ImGuiRenderer* m_ImGuiRenderer;
     Subsystem* m_RootSystem;
     bool m_Running;
 };

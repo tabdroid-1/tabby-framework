@@ -2,8 +2,6 @@
 
 #include <memory>
 
-// Platform detection using predefined macros
-// TODO: Add TB_ARCH
 #ifdef _WIN32
 /* Windows x64/x86 */
 #    ifdef _WIN64

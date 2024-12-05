@@ -72,7 +72,6 @@ set(PROJECT_VENDOR_DIR "vendor")
 
 set(SDL ${PROJECT_VENDOR_DIR}/SDL)
 set(BGFX ${PROJECT_VENDOR_DIR}/bgfx)
-set(IMGUI ${PROJECT_VENDOR_DIR}/imgui)
 set(TRACY ${PROJECT_VENDOR_DIR}/tracy)
 set(ENKITS ${PROJECT_VENDOR_DIR}/enkiTS)
 set(SPDLOG ${PROJECT_VENDOR_DIR}/spdlog)
@@ -102,7 +101,6 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${SDL3_INCLUDE_DIRS})
 target_include_directories(${PROJECT_NAME} PUBLIC ${BGFX}/bx/include) 
 target_include_directories(${PROJECT_NAME} PUBLIC ${SPDLOG}/include) 
 target_include_directories(${PROJECT_NAME} PUBLIC ${ENKITS}/src) 
-target_include_directories(${PROJECT_NAME} PUBLIC ${IMGUI}) 
 target_include_directories(${PROJECT_NAME} PUBLIC ${TRACY}) 
 
 # ####################
@@ -119,9 +117,6 @@ if (NOT TARGET SDL3-static)
 endif()
 if (NOT TARGET tracy)
     add_subdirectory(${TRACY})
-endif()
-if (NOT TARGET imgui)
-    add_subdirectory(${IMGUI})
 endif()
 if (NOT TARGET enkiTS)
     add_subdirectory(${ENKITS})
@@ -211,7 +206,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     bgfx
     bimg
     tracy 
-    imgui
     enkiTS
     spdlog
     SDL3::SDL3-static

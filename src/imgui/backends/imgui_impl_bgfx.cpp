@@ -6,7 +6,7 @@
 // identifier. Read the FAQ about ImTextureID in imgui.cpp.
 
 #include "imgui_impl_bgfx.h"
-#include "imgui.h"
+#include "../include/tabby/imgui/imgui.h"
 
 // BGFX/BX
 #include "bgfx/bgfx.h"

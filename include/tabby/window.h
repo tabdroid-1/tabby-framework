@@ -37,8 +37,6 @@ public:
     Window(const WindowSpecification& spec);
     ~Window();
 
-    void ProcessEvents();
-
     void RefreshSpecification(const WindowSpecification& spec);
 
     const WindowSpecification& GetSpecification() const { return m_Specification; }
@@ -50,6 +48,8 @@ private:
     void* m_WindowHandle;
 
     WindowSpecification m_Specification;
+
+    friend class WindowManager;
 };
 
 }

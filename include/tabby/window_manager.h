@@ -23,7 +23,8 @@ public:
 
 protected:
     inline static WindowManager* s_Instance;
-    std::unordered_map<std::string, Shared<Window>> m_ActiveWindows;
+    std::unordered_map<std::string, Shared<Window>> m_ActiveWindowsByTag;
+    std::unordered_map<uint64_t, Shared<Window>> m_ActiveWindowsByID;
 };
 
 };
