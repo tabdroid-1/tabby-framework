@@ -12,8 +12,9 @@ struct WindowSpecification {
     uint32_t height;
     uint32_t min_width;
     uint32_t min_height;
-    uint8_t fullscreen_mode;
-    bool resizable;
+    uint64_t flags;
+    // uint8_t fullscreen_mode;
+    // bool resizable;
     EventCallbackFn event_callback;
 
     static WindowSpecification Default()
@@ -24,8 +25,8 @@ struct WindowSpecification {
         spec.height = 1080;
         spec.min_width = 192;
         spec.min_height = 108;
-        spec.fullscreen_mode = 0;
-        spec.resizable = true;
+        // spec.fullscreen_mode = 0;
+        // spec.resizable = true;
         return spec;
     }
 };
@@ -51,5 +52,4 @@ private:
 
     friend class WindowManager;
 };
-
 }

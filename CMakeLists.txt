@@ -58,8 +58,15 @@ set(ENKITS_BUILD_C_INTERFACE OFF CACHE BOOL "Build C interface" FORCE)
 set(ENKITS_BUILD_EXAMPLES OFF CACHE BOOL "Build example applications" FORCE)
 set(SPDLOG_HEADER_ONLY OFF CACHE BOOL "" FORCE)
 
+
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
+    set(BGFX_CONFIG_MULTITHREADED OFF CACHE BOOL "" FORCE)
+endif()
+
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(BX_CONFIG_DEBUG ON CACHE BOOL "" FORCE)
+else ()
+    set(BX_CONFIG_DEBUG OFF CACHE BOOL "" FORCE)
 endif()
 
 set(PROJECT_SOURCE_DIR "src")
@@ -92,14 +99,15 @@ list(APPEND PROJECT_SOURCES
 
 add_library(${PROJECT_NAME} STATIC ${PROJECT_SOURCES})
 
+get_filename_component(SDL_INCLUDE_ABS "${SDL}/include" ABSOLUTE)
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}) 
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_INCLUDE_DIR}) 
+target_include_directories(${PROJECT_NAME} PUBLIC ${SPDLOG}/include) 
 target_include_directories(${PROJECT_NAME} PUBLIC ${BGFX}/bgfx/3rdparty) 
 target_include_directories(${PROJECT_NAME} PUBLIC ${BGFX}/bgfx/include) 
 target_include_directories(${PROJECT_NAME} PUBLIC ${BGFX}/bimg/include) 
-target_include_directories(${PROJECT_NAME} PUBLIC ${SDL3_INCLUDE_DIRS}) 
 target_include_directories(${PROJECT_NAME} PUBLIC ${BGFX}/bx/include) 
-target_include_directories(${PROJECT_NAME} PUBLIC ${SPDLOG}/include) 
+target_include_directories(${PROJECT_NAME} PUBLIC ${SDL}/include) 
 target_include_directories(${PROJECT_NAME} PUBLIC ${ENKITS}/src) 
 target_include_directories(${PROJECT_NAME} PUBLIC ${TRACY}) 
 
@@ -197,6 +205,15 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Android")
 
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     message(STATUS "Building for Emscripten (WebAssembly)")
+
+    target_link_options(${PROJECT_NAME} PUBLIC "-sFORCE_FILESYSTEM=1")
+    target_link_options(${PROJECT_NAME} PUBLIC "-sALLOW_MEMORY_GROWTH")
+    target_link_options(${PROJECT_NAME} PUBLIC "-sOFFSCREEN_FRAMEBUFFER=1")
+
+    if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+        target_link_options(${PROJECT_NAME} PUBLIC "-sEXIT_RUNTIME=1")
+        target_link_options(${PROJECT_NAME} PUBLIC "-sASSERTIONS=1")
+    endif()
 else()
     message(FATAL_ERROR "Unknown platform: ${CMAKE_SYSTEM_NAME}")
 endif()
@@ -223,6 +240,10 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
 
     add_compile_options(
       "$<$<CONFIG:DEBUG>:-O0;-g3;-ggdb>"
+    )
+else (CMAKE_BUILD_TYPE STREQUAL "Release" AND ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
+    target_compile_definitions(tabby PUBLIC 
+        BX_CONFIG_DEBUG
     )
 endif()
 

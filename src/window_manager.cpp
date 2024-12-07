@@ -13,6 +13,10 @@ namespace Tabby {
 
 WindowManager::WindowManager()
 {
+    if (Application::Get()->GetFlags() & TABBY_LAUNCH_OPTION_WAYLAND)
+        SDL_SetHint(SDL_HINT_VIDEO_DRIVER, "wayland,x11");
+    else if (Application::Get()->GetFlags() & TABBY_LAUNCH_OPTION_X11)
+        SDL_SetHint(SDL_HINT_VIDEO_DRIVER, "x11");
 }
 
 WindowManager::~WindowManager()
@@ -25,6 +29,12 @@ WindowManager* WindowManager::Init()
         s_Instance = new WindowManager();
 
     return s_Instance;
+}
+
+void WindowManager::Shutdown()
+{
+    if (s_Instance)
+        delete s_Instance;
 }
 
 void WindowManager::AddWindow(const std::string tag, const WindowSpecification& spec)
@@ -76,121 +86,142 @@ Shared<Window> WindowManager::GetWindow(const std::string& tag)
     return it->second;
 }
 
-const std::unordered_map<std::string, Shared<Window>>& WindowManager::GetAllWindows()
+const std::unordered_map<std::string, Shared<Window>>& WindowManager::GetAllWindowsByTag()
 {
     return m_ActiveWindowsByTag;
 }
 
-void WindowManager::ProcessEvents()
+const std::unordered_map<uint64_t, Shared<Window>>& WindowManager::GetAllWindowsByID()
 {
-    SDL_Event event;
-    while (SDL_PollEvent(&event)) {
-        ImGui_ImplSDL3_ProcessEvent(&event);
-        switch (event.type) {
-        case SDL_EVENT_WINDOW_RESIZED: {
+    return m_ActiveWindowsByID;
+}
 
-            // probably sohuld be error handling but eh
-            auto window = m_ActiveWindowsByID[event.window.windowID];
+ApplicationResult WindowManager::ProcessEvents(void* event)
+{
 
-            window->m_Specification.width = event.window.data1;
-            window->m_Specification.height = event.window.data2;
+    auto sdl_event = (SDL_Event*)event;
+    auto window_manager = Application::Get()->GetWindowManager();
 
-            WindowResizeEvent resizeEvent(window->m_Specification.width, window->m_Specification.height);
+    switch (sdl_event->type) {
 
-            // SDL_PropertiesID prop_id = SDL_GetWindowProperties((SDL_Window*)m_WindowHandle);
-            // const char* window_tag = SDL_GetStringProperty(prop_id, "tabby_window_tag", "NO TAG FOUND");
-            //
-            // if (strcmp(window_tag, "main"))
-            bgfx::reset(window->m_Specification.width, window->m_Specification.height);
+    case SDL_EVENT_WINDOW_RESIZED: {
 
-            if (window->m_Specification.event_callback)
-                window->m_Specification.event_callback(resizeEvent);
+        // probably sohuld be error handling but eh
+        auto& window = window_manager->m_ActiveWindowsByID[sdl_event->window.windowID];
 
-            break;
-        }
+        window->m_Specification.width = sdl_event->window.data1;
+        window->m_Specification.height = sdl_event->window.data2;
 
-        case SDL_EVENT_WINDOW_CLOSE_REQUESTED: {
+        WindowResizeEvent resizeEvent(window->m_Specification.width, window->m_Specification.height);
 
-            auto window = m_ActiveWindowsByID[event.window.windowID];
+        // SDL_PropertiesID prop_id = SDL_GetWindowProperties((SDL_Window*)m_WindowHandle);
+        // const char* window_tag = SDL_GetStringProperty(prop_id, "tabby_window_tag", "NO TAG FOUND");
+        //
+        // if (strcmp(window_tag, "main"))
+        bgfx::reset(window->m_Specification.width, window->m_Specification.height);
+        TB_CORE_INFO("{}, {}", window->m_Specification.width, window->m_Specification.height);
 
-            WindowCloseEvent closeEvent;
-            window->m_Specification.event_callback(closeEvent);
+        if (window->m_Specification.event_callback)
+            window->m_Specification.event_callback(resizeEvent);
 
-            SDL_PropertiesID prop_id = SDL_GetWindowProperties((SDL_Window*)window->Raw());
-            const char* window_tag = SDL_GetStringProperty(prop_id, "tabby_window_tag", "NO TAG FOUND");
-            Application::Get()->GetWindowManager()->RemoveWindow(window_tag);
-
-            break;
-        }
-
-        case SDL_EVENT_KEY_DOWN: {
-            auto window = m_ActiveWindowsByID[event.key.windowID];
-
-            if (event.key.repeat == 0) {
-                KeyPressedEvent keyPressedEvent((KeyCode)event.key.scancode, false);
-                window->m_Specification.event_callback(keyPressedEvent);
-            }
-            break;
-        }
-
-        case SDL_EVENT_KEY_UP: {
-            auto window = m_ActiveWindowsByID[event.key.windowID];
-
-            KeyReleasedEvent keyReleasedEvent((KeyCode)event.key.scancode);
-            window->m_Specification.event_callback(keyReleasedEvent);
-            break;
-        }
-
-        case SDL_EVENT_TEXT_INPUT: {
-            auto window = m_ActiveWindowsByID[event.text.windowID];
-
-            KeyTypedEvent keyTypedEvent((KeyCode)event.text.text[0]);
-            window->m_Specification.event_callback(keyTypedEvent);
-            break;
-        }
-
-        case SDL_EVENT_MOUSE_BUTTON_DOWN: {
-            auto window = m_ActiveWindowsByID[event.button.windowID];
-
-            if (event.button.down) {
-                MouseButtonPressedEvent mouseButtonPressedEvent((MouseCode)event.button.button);
-                window->m_Specification.event_callback(mouseButtonPressedEvent);
-            }
-            break;
-        }
-
-        case SDL_EVENT_MOUSE_BUTTON_UP: {
-            auto window = m_ActiveWindowsByID[event.button.windowID];
-
-            if (event.button.down) {
-                MouseButtonReleasedEvent mouseButtonReleasedEvent((MouseCode)event.button.button);
-                window->m_Specification.event_callback(mouseButtonReleasedEvent);
-            }
-            break;
-        }
-
-        case SDL_EVENT_MOUSE_MOTION: {
-            auto window = m_ActiveWindowsByID[event.motion.windowID];
-
-            MouseMovedEvent mouseMovedEvent(static_cast<float>(event.motion.x), static_cast<float>(event.motion.y));
-            window->m_Specification.event_callback(mouseMovedEvent);
-            break;
-        }
-
-        case SDL_EVENT_MOUSE_WHEEL: {
-            auto window = m_ActiveWindowsByID[event.wheel.windowID];
-
-            MouseScrolledEvent mouseScrolledEvent(static_cast<float>(event.wheel.x), static_cast<float>(event.wheel.y));
-            window->m_Specification.event_callback(mouseScrolledEvent);
-            break;
-        }
-        }
+        break;
     }
 
-    if (s_Instance->m_ActiveWindowsByTag.size() == 0) {
-        AppCloseEvent event;
-        Application::Get()->OnEvent(event);
+    case SDL_EVENT_WINDOW_CLOSE_REQUESTED: {
+
+        auto& window = window_manager->m_ActiveWindowsByID[sdl_event->window.windowID];
+
+        WindowCloseEvent closeEvent;
+        window->m_Specification.event_callback(closeEvent);
+
+        SDL_PropertiesID prop_id = SDL_GetWindowProperties((SDL_Window*)window->Raw());
+        const char* window_tag = SDL_GetStringProperty(prop_id, "tabby_window_tag", "NO TAG FOUND");
+        Application::Get()->GetWindowManager()->RemoveWindow(window_tag);
+
+        break;
     }
+
+    case SDL_EVENT_KEY_DOWN: {
+        auto& window = window_manager->m_ActiveWindowsByID[sdl_event->key.windowID];
+
+        if (sdl_event->key.repeat == 0) {
+            KeyPressedEvent keyPressedEvent((KeyCode)sdl_event->key.scancode, false);
+            window->m_Specification.event_callback(keyPressedEvent);
+        }
+        break;
+    }
+
+    case SDL_EVENT_KEY_UP: {
+        auto& window = window_manager->m_ActiveWindowsByID[sdl_event->key.windowID];
+
+        KeyReleasedEvent keyReleasedEvent((KeyCode)sdl_event->key.scancode);
+        window->m_Specification.event_callback(keyReleasedEvent);
+        break;
+    }
+
+    case SDL_EVENT_TEXT_INPUT: {
+        auto& window = window_manager->m_ActiveWindowsByID[sdl_event->text.windowID];
+
+        KeyTypedEvent keyTypedEvent((KeyCode)sdl_event->text.text[0]);
+        window->m_Specification.event_callback(keyTypedEvent);
+        break;
+    }
+
+    case SDL_EVENT_MOUSE_BUTTON_DOWN: {
+        auto& window = window_manager->m_ActiveWindowsByID[sdl_event->button.windowID];
+
+        if (sdl_event->button.down) {
+            MouseButtonPressedEvent mouseButtonPressedEvent((MouseCode)sdl_event->button.button);
+            window->m_Specification.event_callback(mouseButtonPressedEvent);
+        }
+        break;
+    }
+
+    case SDL_EVENT_MOUSE_BUTTON_UP: {
+        auto& window = window_manager->m_ActiveWindowsByID[sdl_event->button.windowID];
+
+        if (sdl_event->button.down) {
+            MouseButtonReleasedEvent mouseButtonReleasedEvent((MouseCode)sdl_event->button.button);
+            window->m_Specification.event_callback(mouseButtonReleasedEvent);
+        }
+        break;
+    }
+
+    case SDL_EVENT_MOUSE_MOTION: {
+        auto& window = window_manager->m_ActiveWindowsByID[sdl_event->motion.windowID];
+
+        MouseMovedEvent mouseMovedEvent(static_cast<float>(sdl_event->motion.x), static_cast<float>(sdl_event->motion.y));
+        window->m_Specification.event_callback(mouseMovedEvent);
+        break;
+    }
+
+    case SDL_EVENT_MOUSE_WHEEL: {
+        auto& window = window_manager->m_ActiveWindowsByID[sdl_event->wheel.windowID];
+
+        MouseScrolledEvent mouseScrolledEvent(static_cast<float>(sdl_event->wheel.x), static_cast<float>(sdl_event->wheel.y));
+        window->m_Specification.event_callback(mouseScrolledEvent);
+        break;
+    }
+
+    case SDL_EVENT_QUIT: {
+        AppCloseEvent close_event;
+        Application::Get()->OnEvent(close_event);
+
+        return TABBY_APPLICATION_SUCCESS;
+    }
+    }
+    return TABBY_APPLICATION_CONTINUE;
+
+    // SDL_Event event;
+    // while (SDL_PollEvent(&event)) {
+    //     TB_CORE_INFO("1");
+    //     // ImGui_ImplSDL3_ProcessEvent(&event);
+    // }
+
+    // if (s_Instance->m_ActiveWindowsByTag.size() == 0) {
+    //     AppCloseEvent event;
+    //     Application::Get()->OnEvent(event);
+    // }
 }
 
 }

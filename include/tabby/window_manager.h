@@ -10,16 +10,16 @@ public:
     ~WindowManager();
 
     static WindowManager* Init();
-
-    static void Shutdown() { delete s_Instance; };
+    static void Shutdown();
 
     void AddWindow(const std::string tag, const WindowSpecification& config);
     void RemoveWindow(const std::string& tag);
 
-    const std::unordered_map<std::string, Shared<Window>>& GetAllWindows();
+    const std::unordered_map<std::string, Shared<Window>>& GetAllWindowsByTag();
+    const std::unordered_map<uint64_t, Shared<Window>>& GetAllWindowsByID();
     Shared<Window> GetWindow(const std::string& tag);
 
-    void ProcessEvents();
+    ApplicationResult ProcessEvents(void* event);
 
 protected:
     inline static WindowManager* s_Instance;

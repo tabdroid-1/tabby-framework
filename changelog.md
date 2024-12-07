@@ -1,3 +1,11 @@
+Version: 07-12-2024_1 Beta 
+Changes:
+- Option flags for window and application 
+- Proper event handling
+- Wasm support
+
+---------------------------
+
 Version: 05-12-2024_1 Beta 
 Changes:
 - ImGui packed by default 

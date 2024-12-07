@@ -21,7 +21,7 @@ void Input::Update()
 
     auto window_manager = Application::Get()->GetWindowManager();
 
-    for (auto window : window_manager->GetAllWindows()) {
+    for (auto window : window_manager->GetAllWindowsByTag()) {
 
         WindowInputData data;
 

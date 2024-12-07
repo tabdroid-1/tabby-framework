@@ -1,7 +1,10 @@
 #include "tabby/application.h"
+#include "tabby/event_mouse.h"
+#include "tabby/event_key.h"
 
 using namespace Tabby;
 
+#include "bgfx/bgfx.h"
 #define SDL_MAIN_USE_CALLBACKS
 #include <SDL3/SDL_main.h>
 
@@ -25,12 +28,7 @@ SDL_AppResult SDL_AppIterate(void* appstate)
 SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event)
 {
     auto app = (Application*)appstate;
-
-    if (event->type == SDL_EVENT_QUIT) {
-        AppCloseEvent close_event;
-        app->OnEvent(close_event);
-    }
-    return SDL_APP_CONTINUE;
+    return (SDL_AppResult)app->GetWindowManager()->ProcessEvents(event);
 }
 
 void SDL_AppQuit(void* appstate, SDL_AppResult result)

@@ -113,8 +113,8 @@ void ImGuiRenderer::Destroy()
 
 void ImGuiRenderer::BeginFrame()
 {
-    ImGui_Implbgfx_NewFrame();
     ImGui_ImplSDL3_NewFrame();
+    ImGui_Implbgfx_NewFrame();
     ImGui::NewFrame();
 }
 

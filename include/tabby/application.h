@@ -17,26 +17,11 @@ struct ApplicationSpecification {
     uint64_t flags = 0;
 };
 
-typedef enum ApplicationResult {
-    TABBY_APPLICATION_CONTINUE, /**< Value that requests that the app continue from the main callbacks. */
-    TABBY_APPLICATION_SUCCESS, /**< Value that requests termination with success from the main callbacks. */
-    TABBY_APPLICATION_FAILURE /**< Value that requests termination with error from the main callbacks. */
-} ApplicationResult;
-
 // need to be defined by user
 extern ApplicationSpecification ConstructRootSystem();
 
 class Application {
 public:
-    enum class LaunchOptionsFlags {
-        HEADLESS = BIT(0),
-        OPENGLES = BIT(1),
-        OPENGL = BIT(2),
-        VULKAN = BIT(3),
-        METAL = BIT(4),
-        DIRECT3D = BIT(5),
-    };
-
     Application(const ApplicationSpecification& spec);
 
     static Application* Get() { return s_Instance; }
@@ -46,6 +31,9 @@ public:
     void OnEvent(Event& e);
 
     WindowManager* GetWindowManager() const { return m_WindowManger; }
+
+    uint64_t GetFlags() const { return m_Specification.flags; }
+    void SetFlags(uint64_t flags);
 
 private:
     bool OnExit(AppCloseEvent& e);

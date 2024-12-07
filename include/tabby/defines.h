@@ -161,6 +161,40 @@ Shared<T1> ShareAs(const Shared<T2>& ptr)
     return std::static_pointer_cast<T1>(ptr);
 };
 
+typedef enum ApplicationResult {
+    TABBY_APPLICATION_CONTINUE, /**< Value that requests that the app continue from the main callbacks. */
+    TABBY_APPLICATION_SUCCESS, /**< Value that requests termination with success from the main callbacks. */
+    TABBY_APPLICATION_FAILURE /**< Value that requests termination with error from the main callbacks. */
+} ApplicationResult;
+
+typedef enum WindowFlags {
+    TABBY_WINDOW_RESIZEABLE = BIT(0),
+    TABBY_WINDOW_FULLSCREEN = BIT(1),
+    TABBY_WINDOW_MINIMIZE = BIT(2),
+} WindowFlags;
+
+typedef enum LaunchOptionsFlags {
+    TABBY_LAUNCH_OPTION_NO_API = BIT(0),
+    TABBY_LAUNCH_OPTION_AGC = BIT(1),
+    TABBY_LAUNCH_OPTION_DIRECT3D11 = BIT(2),
+    TABBY_LAUNCH_OPTION_DIRECT3D12 = BIT(3),
+    TABBY_LAUNCH_OPTION_GNM = BIT(4),
+    TABBY_LAUNCH_OPTION_METAL = BIT(5),
+    TABBY_LAUNCH_OPTION_NVN = BIT(6),
+    TABBY_LAUNCH_OPTION_OPENGLES = BIT(7),
+    TABBY_LAUNCH_OPTION_OPENGL = BIT(8),
+    TABBY_LAUNCH_OPTION_VULKAN = BIT(9),
+    TABBY_LAUNCH_OPTION_AUTO_PICK_API = BIT(10), // automatically pick and graphics api
+    TABBY_LAUNCH_OPTION_HEADLESS = BIT(11), // No graphic interface, but graphics_apis can still be used if they support headless mode
+    TABBY_LAUNCH_OPTION_X11 = BIT(12), // Launch using X11
+    TABBY_LAUNCH_OPTION_WAYLAND = BIT(13), // Launch using Wayland, fallback to X11 if fails
+    TABBY_LAUNCH_OPTION_IMGUI = BIT(14), // Enables ImGui renderer
+    TABBY_LAUNCH_OPTION_DEBUG_IFH = BIT(15), // BGFX_DEBUG_IFH
+    TABBY_LAUNCH_OPTION_DEBUG_STATS = BIT(16), // BGFX_DEBUG_STATS
+    TABBY_LAUNCH_OPTION_DEBUG_TEXT = BIT(17), // BGFX_DEBUG_TEXT
+    TABBY_LAUNCH_OPTION_DEBUG_PROFILER = BIT(18), // BGFX_DEBUG_PROFILER
+} LaunchOptionsFlags;
+
 }
 
 #include "log.h"
