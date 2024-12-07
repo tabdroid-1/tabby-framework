@@ -1,3 +1,10 @@
+Version: 07-12-2024_2 Beta 
+Changes:
+- readme update
+- removed gtk4 from required dependencies
+
+---------------------------
+
 Version: 07-12-2024_1 Beta 
 Changes:
 - Option flags for window and application 

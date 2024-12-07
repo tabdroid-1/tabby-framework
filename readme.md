@@ -17,7 +17,6 @@ External Dependencies
   - enkiTS
   - spdlog
   - tracy profiler
-  - GTK4 (on Linux) 
 
 Supported Graphics Apis
 -----------------------
@@ -38,12 +37,12 @@ Supported Platforms
 -------------------
 Currently:
 - Linux
+- MacOS
+- Wasm/Emscripten
 
 Planned: (by priority)
-- Wasm/Emscripten
-- Windows
-- MacOS
 - Android
+- Windows
 - iOS/iPadOS/tvOS
 
 

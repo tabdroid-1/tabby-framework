@@ -169,13 +169,6 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 
     target_link_options(${PROJECT_NAME} PUBLIC -ludev)
 
-    find_package(PkgConfig REQUIRED)
-    pkg_check_modules(GTK4 REQUIRED IMPORTED_TARGET gtk4)
-
-    target_link_libraries(${PROJECT_NAME} PRIVATE 
-        PkgConfig::GTK4
-        )
-
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
     if(CMAKE_OSX_SYSROOT STREQUAL "iphoneos" OR CMAKE_OSX_SYSROOT STREQUAL "iphonesimulator")
         message(STATUS "Building for iOS")
