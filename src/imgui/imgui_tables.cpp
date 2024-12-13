@@ -196,7 +196,7 @@ Index of this file:
 
 #include "../include/tabby/imgui/imgui.h"
 #ifndef IMGUI_DISABLE
-#    include "imgui_internal.h"
+#    include "../include/tabby/imgui/imgui_internal.h"
 
 // System includes
 #    include <stdint.h> // intptr_t

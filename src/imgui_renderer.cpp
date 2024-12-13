@@ -3,7 +3,6 @@
 
 #include "imgui/backends/imgui_impl_bgfx.h"
 #include "imgui/backends/imgui_impl_sdl3.h"
-#include "imgui/misc/cpp/imgui_stdlib.h"
 #include <bgfx/bgfx.h>
 
 namespace Tabby {

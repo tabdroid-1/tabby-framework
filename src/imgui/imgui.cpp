@@ -1064,7 +1064,7 @@ CODE
 
 #include "../include/tabby/imgui/imgui.h"
 #ifndef IMGUI_DISABLE
-#    include "imgui_internal.h"
+#    include "../include/tabby/imgui/imgui_internal.h"
 
 // System includes
 #    include <stdio.h> // vsnprintf, sscanf, printf
@@ -2719,7 +2719,7 @@ static inline int ImTextCharToUtf8_inline(char* buf, int buf_size, unsigned int 
             return 0;
         buf[0] = (char)(0xe0 + (c >> 12));
         buf[1] = (char)(0x80 + ((c >> 6) & 0x3f));
-        buf[2] = (char)(0x80 + ((c)&0x3f));
+        buf[2] = (char)(0x80 + ((c) & 0x3f));
         return 3;
     }
     if (c <= 0x10FFFF) {
@@ -2728,7 +2728,7 @@ static inline int ImTextCharToUtf8_inline(char* buf, int buf_size, unsigned int 
         buf[0] = (char)(0xf0 + (c >> 18));
         buf[1] = (char)(0x80 + ((c >> 12) & 0x3f));
         buf[2] = (char)(0x80 + ((c >> 6) & 0x3f));
-        buf[3] = (char)(0x80 + ((c)&0x3f));
+        buf[3] = (char)(0x80 + ((c) & 0x3f));
         return 4;
     }
     // Invalid code point, the max unicode is 0x10FFFF
@@ -8204,7 +8204,7 @@ bool ImGui::Begin(const char* name, bool* p_open, ImGuiWindowFlags flags)
             DebugLocateItemResolveWithLastItem();
 #    endif
 
-            // [Test Engine] Register title bar / tab with MoveId.
+        // [Test Engine] Register title bar / tab with MoveId.
 #    ifdef IMGUI_ENABLE_TEST_ENGINE
         if (!(window->Flags & ImGuiWindowFlags_NoTitleBar))
             IMGUI_TEST_ENGINE_ITEM_ADD(g.LastItemData.ID, g.LastItemData.Rect, &g.LastItemData);
@@ -10283,7 +10283,7 @@ static void ImGui::UpdateKeyboardInputs()
     if (io.ConfigFlags & ImGuiConfigFlags_NoKeyboard)
         io.ClearInputKeys();
 
-        // Import legacy keys or verify they are not used
+    // Import legacy keys or verify they are not used
 #    ifndef IMGUI_DISABLE_OBSOLETE_KEYIO
     if (io.BackendUsingLegacyKeyArrays == 0) {
         // Backend used new io.AddKeyEvent() API: Good! Verify that old arrays are never written to externally.
@@ -10754,7 +10754,7 @@ void ImGui::UpdateInputEvents(bool trickle_fast_inputs)
             if (trickle_interleaved_nonchar_keys_and_text && !key_is_potentially_for_char_input)
                 key_changed_nonchar = true;
 
-                // Allow legacy code using io.KeysDown[GetKeyIndex()] with new backends
+            // Allow legacy code using io.KeysDown[GetKeyIndex()] with new backends
 #    ifndef IMGUI_DISABLE_OBSOLETE_KEYIO
             io.KeysDown[key_data_index] = key_data->Down;
             if (io.KeyMap[key_data_index] != -1)
@@ -10787,7 +10787,7 @@ void ImGui::UpdateInputEvents(bool trickle_fast_inputs)
     for (int n = 0; n < event_n; n++)
         g.InputEventsTrail.push_back(g.InputEventsQueue[n]);
 
-        // [DEBUG]
+    // [DEBUG]
 #    ifndef IMGUI_DISABLE_DEBUG_TOOLS
     if (event_n != 0 && (g.DebugLogFlags & ImGuiDebugLogFlags_EventIO))
         for (int n = 0; n < g.InputEventsQueue.Size; n++)
@@ -11124,8 +11124,8 @@ static void ImGui::ErrorCheckNewFrameSanityChecks()
     else
         IM_ASSERT(0);
 
-        // Emscripten backends are often imprecise in their submission of DeltaTime. (#6114, #3644)
-        // Ideally the Emscripten app/backend should aim to fix or smooth this value and avoid feeding zero, but we tolerate it.
+    // Emscripten backends are often imprecise in their submission of DeltaTime. (#6114, #3644)
+    // Ideally the Emscripten app/backend should aim to fix or smooth this value and avoid feeding zero, but we tolerate it.
 #    ifdef __EMSCRIPTEN__
     if (g.IO.DeltaTime <= 0.0f && g.FrameCount > 0)
         g.IO.DeltaTime = 0.00001f;
@@ -11544,7 +11544,7 @@ bool ImGui::ItemAdd(const ImRect& bb, ImGuiID id, const ImRect* nav_bb_arg, ImGu
             if (!g.ItemUnclipByLog)
                 return false;
 
-                // [DEBUG]
+    // [DEBUG]
 #    ifndef IMGUI_DISABLE_DEBUG_TOOLS
     if (id != 0) {
         if (id == g.DebugLocateId)
@@ -16623,7 +16623,7 @@ void ImGui::DockContextNewFrameUpdateUndocking(ImGuiContext* ctx)
                     // dc->WantFullRebuild = true;
                 }
 
-                // Process full rebuild
+    // Process full rebuild
 #    if 0
     if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_C)))
         dc->WantFullRebuild = true;

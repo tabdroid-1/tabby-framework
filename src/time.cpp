@@ -13,7 +13,7 @@ double Time::GetTime()
     return result;
 }
 
-double last_frame_time;
+double last_frame_time = Time::GetTime();
 
 void Time::FrameStart()
 {

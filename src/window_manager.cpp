@@ -102,6 +102,11 @@ ApplicationResult WindowManager::ProcessEvents(void* event)
     auto sdl_event = (SDL_Event*)event;
     auto window_manager = Application::Get()->GetWindowManager();
 
+    uint64_t flags = Application::Get()->GetFlags();
+    if ((flags & TABBY_LAUNCH_OPTION_IMGUI)
+        && !(flags & (TABBY_LAUNCH_OPTION_NO_API | TABBY_LAUNCH_OPTION_HEADLESS)))
+        ImGui_ImplSDL3_ProcessEvent((SDL_Event*)event);
+
     switch (sdl_event->type) {
 
     case SDL_EVENT_WINDOW_RESIZED: {

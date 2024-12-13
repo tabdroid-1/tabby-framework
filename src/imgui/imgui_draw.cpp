@@ -33,7 +33,7 @@ Index of this file:
 
 #include "../../include/tabby/imgui/imgui.h"
 #ifndef IMGUI_DISABLE
-#    include "imgui_internal.h"
+#    include "../include/tabby/imgui/imgui_internal.h"
 #    ifdef IMGUI_ENABLE_FREETYPE
 #        include "misc/freetype/imgui_freetype.h"
 #    endif

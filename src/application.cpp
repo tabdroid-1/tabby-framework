@@ -27,9 +27,6 @@ Application::Application(const ApplicationSpecification& spec)
 
     auto main_window = m_WindowManger->GetWindow("main");
 
-    m_RootSystem = spec.root_system;
-    m_RootSystem->Launch();
-
     if ((m_Specification.flags & TABBY_LAUNCH_OPTION_IMGUI)
         && !(m_Specification.flags & (TABBY_LAUNCH_OPTION_NO_API | TABBY_LAUNCH_OPTION_HEADLESS))) {
         m_ImGuiRenderer = new ImGuiRenderer();
@@ -37,6 +34,9 @@ Application::Application(const ApplicationSpecification& spec)
     }
 
     Input::Init();
+
+    m_RootSystem = spec.root_system;
+    m_RootSystem->Launch();
 
     TB_CORE_TRACE("Application specifications");
     TB_CORE_TRACE("\tWorking directory: {}", m_Specification.working_directory);
